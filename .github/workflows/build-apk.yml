@@ -3,6 +3,7 @@ name: Build Android APK
 on:
   push:
     branches: [ "main", "master" ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -22,15 +23,18 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install Dependencies & Capacitor
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Initialize Capacitor
         run: |
-          npm install
-          npx cap init "Romain Workout App" "com.romain.workoutapp" --web-dir . --yes
+          npx cap init "Romain Workout App" "com.romain.workoutapp" --web-dir .
           npx cap add android
 
-      - name: Build Debug APK
+      - name: Build Android APK
         run: |
           cd android
+          chmod +x gradlew
           ./gradlew assembleDebug
 
       - name: Upload APK Artifact
