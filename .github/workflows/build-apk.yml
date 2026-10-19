@@ -15,7 +15,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -26,10 +26,19 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Initialize Capacitor
+      - name: Create Capacitor Config
         run: |
-          npx cap init "Romain Workout App" "com.romain.workoutapp" --web-dir .
-          npx cap add android
+          cat << 'EOF' > capacitor.config.json
+          {
+            "appId": "com.romain.workoutapp",
+            "appName": "Romain Workout App",
+            "webDir": ".",
+            "bundledWebRuntime": false
+          }
+          EOF
+
+      - name: Add Android Platform
+        run: npx cap add android
 
       - name: Build Android APK
         run: |
