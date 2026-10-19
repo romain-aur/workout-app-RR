@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "Native Workout App wrapper",
   "scripts": {
-    "build": "echo 'No build step needed for single file'"
+    "build": "echo 'No build step needed'"
   },
-  dependencies: {},
+  "dependencies": {},
   "devDependencies": {
     "@capacitor/cli": "^5.0.0",
     "@capacitor/core": "^5.0.0",
