@@ -1,838 +1,535 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Romain Workout App</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Canvas Confetti -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Romain Workout App</title>
+  
+  <!-- Mobile & PWA Setup -->
+  <meta name="theme-color" content="#2563eb">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Romain Workout">
+  
+  <!-- Inline Web App Manifest Data URI for PWABuilder compatibility -->
+  <link rel="manifest" href='data:application/manifest+json,{"name":"Romain Workout App","short_name":"RomainWorkout","start_url":".","display":"standalone","background_color":"#f8fafc","theme_color":"#2563eb","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\" fill=\"%232563eb\"><path d=\"M400 128H112a16 16 0 00-16 16v224a16 16 0 0016 16h288a16 16 0 0016-16V144a16 16 0 00-16-16z\"/></svg>","sizes":"512x512","type":"image/svg+xml"}]}'>
 
-        /* Pulse animation for active rest timers */
-        @keyframes pulse-ring {
-            0% { transform: scale(0.97); opacity: 0.85; }
-            50% { transform: scale(1.02); opacity: 1; }
-            100% { transform: scale(0.97); opacity: 0.85; }
-        }
-        .timer-pulse {
-            animation: pulse-ring 2.5s infinite ease-in-out;
-        }
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 
-        /* Hide scrollbars for clean app feel */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-    </style>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .pulse-animation {
+      animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulse-ring {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(0.98); }
+    }
+  </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex items-center justify-center p-0 md:p-4">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between antialiased">
 
-    <!-- Mobile Device Container Outer Frame -->
-    <div class="w-full max-w-md h-screen md:h-[844px] bg-slate-900 md:rounded-[40px] shadow-2xl flex flex-col overflow-hidden relative border-0 md:border-8 border-slate-800">
+  <!-- Header -->
+  <header class="bg-blue-600 text-white shadow-md sticky top-0 z-50">
+    <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <i data-lucide="dumbbell" class="w-6 h-6"></i>
+        <h1 class="text-xl font-bold tracking-tight">Romain Workout App</h1>
+      </div>
+      <div class="flex space-x-1 bg-blue-700/60 p-1 rounded-lg text-xs font-semibold">
+        <button id="nav-workout-btn" onclick="switchTab('workout')" class="px-3 py-1.5 rounded-md bg-white text-blue-700 shadow-sm transition">Workout</button>
+        <button id="nav-log-btn" onclick="switchTab('log')" class="px-3 py-1.5 rounded-md text-blue-100 hover:text-white transition">History</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="max-w-md mx-auto w-full flex-1 p-4 flex flex-col justify-center">
+
+    <!-- WORKOUT TAB -->
+    <div id="workout-tab" class="space-y-4">
+
+      <!-- SCREEN 1: IDLE / START -->
+      <div id="screen-idle" class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 text-center space-y-6">
+        <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto text-blue-600">
+          <i data-lucide="play-circle" class="w-10 h-10"></i>
+        </div>
+        <div>
+          <h2 class="text-2xl font-extrabold text-slate-900">Ready to Train?</h2>
+          <p class="text-slate-500 text-sm mt-1">Guided bodyweight session with dynamic rest timers and lower back protection cues.</p>
+        </div>
+
+        <!-- Routine Breakdown Overview -->
+        <div class="bg-slate-50 rounded-xl p-4 text-left space-y-3 text-sm border border-slate-100">
+          <div class="font-bold text-slate-700 text-xs uppercase tracking-wider">Workout Overview</div>
+          <div class="space-y-2">
+            <div class="flex justify-between items-center text-slate-700">
+              <span class="font-medium">Superset A:</span>
+              <span class="text-slate-500 text-xs">Pike Push-ups &amp; Pull-ups (3x8)</span>
+            </div>
+            <div class="flex justify-between items-center text-slate-700">
+              <span class="font-medium">Superset B:</span>
+              <span class="text-slate-500 text-xs">Dips &amp; Bodyweight Squats (3x8)</span>
+            </div>
+            <div class="flex justify-between items-center text-slate-700">
+              <span class="font-medium">Core Finisher:</span>
+              <span class="text-slate-500 text-xs">Hollow Holds &amp; Bird-Dogs</span>
+            </div>
+          </div>
+        </div>
+
+        <button onclick="startWorkout()" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/25 active:scale-[0.98] transition flex items-center justify-center space-x-2 text-lg">
+          <i data-lucide="zap" class="w-5 h-5"></i>
+          <span>Start Workout</span>
+        </button>
+      </div>
+
+      <!-- SCREEN 2: EXERCISE ACTIVE -->
+      <div id="screen-exercise" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 text-center space-y-6">
         
-        <!-- Status Bar Simulator -->
-        <div class="px-6 pt-3 pb-1 flex justify-between items-center text-xs font-medium text-slate-400 select-none bg-slate-900/90 z-20">
-            <span id="current-time">12:00</span>
-            <div class="flex items-center space-x-2">
-                <i data-lucide="wifi" class="w-3.5 h-3.5"></i>
-                <i data-lucide="battery-charging" class="w-4 h-4"></i>
-            </div>
+        <!-- Header Progress -->
+        <div class="flex items-center justify-between text-xs font-semibold text-slate-400 border-b border-slate-100 pb-3">
+          <span id="block-title" class="uppercase tracking-wider text-blue-600">SUPERSET A</span>
+          <span id="exercise-progress">Step 1 of 18</span>
         </div>
 
-        <!-- App Bar / Header Navigation -->
-        <header class="px-5 py-3 flex justify-between items-center bg-slate-900 border-b border-slate-800/60 z-20">
-            <div class="flex items-center space-x-3">
-                <div class="w-9 h-9 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold shadow-inner">
-                    <i data-lucide="dumbbell" class="w-5 h-5"></i>
-                </div>
-                <div>
-                    <h1 class="font-extrabold text-base text-slate-100 leading-none tracking-tight">Romain Workout App</h1>
-                    <span class="text-[11px] text-cyan-400/90 font-medium">Back-Safe Calisthenics</span>
-                </div>
-            </div>
-            <div class="flex items-center space-x-1">
-                <button id="sound-toggle-btn" onclick="toggleSound()" class="p-2 rounded-full hover:bg-slate-800 text-slate-300 transition-colors" title="Toggle Sound">
-                    <i id="sound-icon" data-lucide="volume-2" class="w-5 h-5"></i>
-                </button>
-            </div>
-        </header>
-
-        <!-- Navigation Tabs Bar -->
-        <nav id="nav-tabs" class="grid grid-cols-2 bg-slate-950/60 border-b border-slate-800/80 p-1 text-xs font-semibold z-20">
-            <button id="tab-btn-workout" onclick="showHome()" class="py-2.5 rounded-xl bg-slate-800 text-cyan-400 shadow transition-all flex items-center justify-center space-x-2">
-                <i data-lucide="play-circle" class="w-4 h-4"></i>
-                <span>Workout</span>
-            </button>
-            <button id="tab-btn-history" onclick="showHistoryScreen()" class="py-2.5 rounded-xl text-slate-400 hover:text-slate-200 transition-all flex items-center justify-center space-x-2">
-                <i data-lucide="history" class="w-4 h-4"></i>
-                <span>Workout Log</span>
-            </button>
-        </nav>
-
-        <!-- Main Screen Container -->
-        <main class="flex-1 overflow-y-auto no-scrollbar relative flex flex-col">
-
-            <!-- ================= HOME / WORKOUT TAB ================= -->
-            <section id="screen-home" class="p-5 space-y-4 flex-1 flex flex-col justify-between">
-                <div class="space-y-4">
-                    <!-- Title Banner Card -->
-                    <div class="p-5 rounded-3xl bg-gradient-to-br from-cyan-950/60 via-slate-800 to-slate-900 border border-cyan-500/20 shadow-lg">
-                        <div class="inline-block px-3 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 text-[11px] font-semibold mb-2">
-                            Ready to Train
-                        </div>
-                        <h2 class="text-2xl font-black text-white mb-1">Bodyweight Routine</h2>
-                        <p class="text-xs text-slate-300 leading-relaxed">
-                            Structured paired supersets with automated rest periods and lower back protection cues.
-                        </p>
-                    </div>
-
-                    <!-- Routine Breakdown Cards -->
-                    <div class="space-y-2.5">
-                        <h3 class="text-[11px] font-bold uppercase tracking-wider text-slate-400 px-1">Routine Plan</h3>
-                        
-                        <!-- Warmup Card -->
-                        <div class="p-3.5 rounded-2xl bg-slate-800/50 border border-slate-700/50 flex items-center justify-between">
-                            <div class="space-y-0.5">
-                                <div class="text-xs font-bold text-teal-400 uppercase tracking-wide">Dynamic Warm-Up</div>
-                                <div class="text-xs text-slate-300">Wrist Prep, Cat-Cows, Rotations, Glute Bridges</div>
-                            </div>
-                            <span class="text-[11px] font-semibold text-slate-400 bg-slate-800 px-2 py-1 rounded-lg">5-10m</span>
-                        </div>
-
-                        <!-- Superset A Card -->
-                        <div class="p-3.5 rounded-2xl bg-slate-800/50 border border-slate-700/50 flex items-center justify-between">
-                            <div class="space-y-0.5">
-                                <div class="text-xs font-bold text-cyan-400 uppercase tracking-wide">Superset A (3 Rounds)</div>
-                                <div class="text-xs font-medium text-slate-200">Pike Push-Ups & Pull-Ups</div>
-                            </div>
-                            <div class="text-right text-[10px] text-slate-400">
-                                <div>60s pair rest</div>
-                                <div class="text-cyan-400 font-semibold">90s round rest</div>
-                            </div>
-                        </div>
-
-                        <!-- Superset B Card -->
-                        <div class="p-3.5 rounded-2xl bg-slate-800/50 border border-slate-700/50 flex items-center justify-between">
-                            <div class="space-y-0.5">
-                                <div class="text-xs font-bold text-cyan-400 uppercase tracking-wide">Superset B (3 Rounds)</div>
-                                <div class="text-xs font-medium text-slate-200">Dips & Bodyweight Squats</div>
-                            </div>
-                            <div class="text-right text-[10px] text-slate-400">
-                                <div>60s pair rest</div>
-                                <div class="text-cyan-400 font-semibold">90s round rest</div>
-                            </div>
-                        </div>
-
-                        <!-- Core Finisher Card -->
-                        <div class="p-3.5 rounded-2xl bg-slate-800/50 border border-slate-700/50 flex items-center justify-between">
-                            <div class="space-y-0.5">
-                                <div class="text-xs font-bold text-amber-400 uppercase tracking-wide">Core & Back Finisher (3 Rounds)</div>
-                                <div class="text-xs font-medium text-slate-200">Hollow Body Hold & Bird-Dogs</div>
-                            </div>
-                            <div class="text-right text-[10px] text-slate-400">
-                                <div>15s hold / 10 reps</div>
-                                <div class="text-amber-400 font-semibold">60s round rest</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Recent Workout History Banner -->
-                    <div id="history-banner" onclick="showHistoryScreen()" class="hidden cursor-pointer p-3.5 bg-slate-800/70 hover:bg-slate-800 rounded-2xl border border-slate-700/60 text-xs text-slate-300 flex justify-between items-center transition-all">
-                        <span class="flex items-center space-x-2">
-                            <i data-lucide="calendar-check" class="w-4 h-4 text-cyan-400"></i>
-                            <span id="last-workout-text">Last workout: --</span>
-                        </span>
-                        <div class="flex items-center space-x-1 text-cyan-400 font-semibold">
-                            <span id="completed-count-text">0 completed</span>
-                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Start Action Button -->
-                <div class="pt-3">
-                    <button onclick="startWorkout()" class="w-full py-4 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-slate-950 font-extrabold text-base rounded-2xl shadow-lg shadow-cyan-500/20 active:scale-[0.98] transition-all flex items-center justify-center space-x-2">
-                        <i data-lucide="play" class="w-5 h-5 fill-current"></i>
-                        <span>Start Workout</span>
-                    </button>
-                </div>
-            </section>
-
-            <!-- ================= WORKOUT LOG / HISTORY TAB ================= -->
-            <section id="screen-history" class="hidden p-5 flex-1 flex flex-col justify-between space-y-4">
-                <div class="space-y-4 flex-1 flex flex-col">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-2">
-                            <i data-lucide="history" class="w-5 h-5 text-cyan-400"></i>
-                            <h2 class="text-lg font-extrabold text-white">Workout Log</h2>
-                        </div>
-                        <button onclick="clearHistoryLog()" class="text-xs text-rose-400 hover:text-rose-300 font-semibold px-2.5 py-1 bg-rose-950/40 border border-rose-900/40 rounded-lg transition-colors">
-                            Clear Log
-                        </button>
-                    </div>
-
-                    <!-- History List Container -->
-                    <div id="history-list-container" class="space-y-2.5 overflow-y-auto max-h-[500px] no-scrollbar pr-1">
-                        <!-- Populated via JavaScript -->
-                    </div>
-                </div>
-
-                <button onclick="showHome()" class="w-full py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl transition-all">
-                    Return to Workout
-                </button>
-            </section>
-
-            <!-- ================= ACTIVE WORKOUT SCREEN ================= -->
-            <section id="screen-active" class="hidden p-5 flex-1 flex flex-col justify-between">
-                
-                <!-- Workout Header / Overall Progress -->
-                <div class="space-y-2">
-                    <div class="flex justify-between items-center text-xs text-slate-400 font-semibold">
-                        <span id="workout-phase-label" class="text-cyan-400 font-bold uppercase tracking-wider">Superset A</span>
-                        <span id="workout-step-count">Step 1 of 28</span>
-                    </div>
-                    <!-- Overall Progress Bar -->
-                    <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                        <div id="overall-progress-bar" class="h-full bg-gradient-to-r from-cyan-500 to-teal-400 transition-all duration-300 w-0"></div>
-                    </div>
-                </div>
-
-                <!-- MAIN DISPLAY CARD (EXERCISE OR REST) -->
-                <div id="main-display-card" class="my-auto py-2 flex flex-col items-center text-center space-y-4">
-                    
-                    <!-- Exercise Header Badge -->
-                    <div id="set-badge" class="px-3.5 py-1 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-semibold uppercase tracking-wider">
-                        Set 1 of 3
-                    </div>
-
-                    <!-- Main Title -->
-                    <h2 id="exercise-title" class="text-2xl md:text-3xl font-black text-white px-2 tracking-tight">
-                        Pike Push-ups
-                    </h2>
-
-                    <!-- Target Metric / Circular Timer Box -->
-                    <div id="metric-box" class="relative flex items-center justify-center my-1">
-                        <!-- Rep Target Mode -->
-                        <div id="rep-target-display" class="space-y-1">
-                            <span id="target-reps" class="text-5xl font-black text-cyan-400 tracking-tight">8</span>
-                            <div class="text-xs text-slate-400 font-semibold uppercase tracking-widest">Target Reps</div>
-                        </div>
-
-                        <!-- Timer Circle Mode (For Hold or Rest) -->
-                        <div id="timer-display" class="hidden relative w-48 h-48 flex items-center justify-center timer-pulse">
-                            <svg class="w-full h-full transform -rotate-90">
-                                <circle cx="96" cy="96" r="82" stroke="currentColor" stroke-width="10" class="text-slate-800" fill="transparent"/>
-                                <circle id="timer-circle-progress" cx="96" cy="96" r="82" stroke="currentColor" stroke-width="10" class="text-cyan-400 transition-all duration-1000 ease-linear" fill="transparent" stroke-dasharray="515" stroke-dashoffset="0" stroke-linecap="round"/>
-                            </svg>
-                            <div class="absolute flex flex-col items-center">
-                                <span id="timer-seconds" class="text-4xl font-black text-white tracking-tight">60</span>
-                                <span id="timer-sublabel" class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Seconds Rest</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Rest Quick Adjusters (+15s / -15s) -->
-                    <div id="timer-adjust-controls" class="hidden flex items-center justify-center space-x-3 pt-1">
-                        <button onclick="adjustTimer(-15)" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold border border-slate-700 active:scale-95 transition-all">
-                            -15s
-                        </button>
-                        <button onclick="togglePause()" class="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded-xl text-xs font-bold border border-slate-700 active:scale-95 transition-all flex items-center space-x-1">
-                            <i id="pause-icon" data-lucide="pause" class="w-3.5 h-3.5"></i>
-                            <span id="pause-text">Pause</span>
-                        </button>
-                        <button onclick="adjustTimer(15)" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold border border-slate-700 active:scale-95 transition-all">
-                            +15s
-                        </button>
-                    </div>
-
-                    <!-- Form Cues / Back Safety Box -->
-                    <div id="form-cue-box" class="w-full p-3.5 rounded-2xl bg-slate-800/70 border border-slate-700/50 text-left flex items-start space-x-3 shadow-inner">
-                        <i id="cue-icon" data-lucide="shield-check" class="w-5 h-5 text-cyan-400 shrink-0 mt-0.5"></i>
-                        <p id="form-cue-text" class="text-xs text-slate-300 leading-relaxed font-medium">
-                            Maintain a strong pike position. Control the downward tempo and press back up vertically.
-                        </p>
-                    </div>
-
-                </div>
-
-                <!-- Active Control Buttons -->
-                <div class="space-y-2 pt-1">
-                    <!-- Primary Action Button -->
-                    <button id="primary-action-btn" onclick="handlePrimaryAction()" class="w-full py-4 bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-extrabold text-base rounded-2xl shadow-lg shadow-cyan-500/20 active:scale-[0.98] transition-all flex items-center justify-center space-x-2">
-                        <i id="primary-action-icon" data-lucide="check" class="w-5 h-5"></i>
-                        <span id="primary-action-text">Done with Set</span>
-                    </button>
-
-                    <!-- Secondary Navigation Controls (Back / Skip / Cancel) -->
-                    <div class="grid grid-cols-3 gap-2">
-                        <!-- PREVIOUS / BACK BUTTON -->
-                        <button id="prev-btn" onclick="previousStep()" class="py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl transition-all flex items-center justify-center space-x-1 disabled:opacity-40 disabled:pointer-events-none">
-                            <i data-lucide="chevron-left" class="w-4 h-4"></i>
-                            <span>Previous</span>
-                        </button>
-
-                        <button onclick="skipStep()" class="py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition-all flex items-center justify-center space-x-1">
-                            <i data-lucide="skip-forward" class="w-4 h-4"></i>
-                            <span>Skip</span>
-                        </button>
-
-                        <button onclick="abortWorkoutConfirm()" class="py-3 bg-slate-800/60 hover:bg-rose-950/40 text-rose-400 font-semibold text-xs rounded-xl transition-all flex items-center justify-center space-x-1">
-                            <i data-lucide="x" class="w-4 h-4"></i>
-                            <span>Quit</span>
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ================= SUMMARY SCREEN ================= -->
-            <section id="screen-summary" class="hidden p-5 flex-1 flex flex-col justify-between text-center">
-                <div class="my-auto space-y-5">
-                    <!-- Trophy Badge -->
-                    <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-tr from-cyan-500 to-teal-400 flex items-center justify-center text-slate-950 shadow-xl shadow-cyan-500/20">
-                        <i data-lucide="trophy" class="w-10 h-10"></i>
-                    </div>
-
-                    <div>
-                        <h2 class="text-3xl font-black text-white">Workout Complete!</h2>
-                        <p class="text-xs text-slate-400 mt-1">Great work Romain! Spine protected, core stabilized.</p>
-                    </div>
-
-                    <!-- Stats Grid -->
-                    <div class="grid grid-cols-2 gap-3 max-w-xs mx-auto">
-                        <div class="p-3.5 rounded-2xl bg-slate-800/60 border border-slate-700/50">
-                            <span class="text-xs text-slate-400 block">Total Time</span>
-                            <span id="summary-total-time" class="text-lg font-bold text-cyan-400">00:00</span>
-                        </div>
-                        <div class="p-3.5 rounded-2xl bg-slate-800/60 border border-slate-700/50">
-                            <span class="text-xs text-slate-400 block">Completed Sets</span>
-                            <span class="text-lg font-bold text-teal-400">18 / 18</span>
-                        </div>
-                    </div>
-
-                    <!-- Lower Back Recovery Note -->
-                    <div class="p-4 rounded-2xl bg-cyan-950/30 border border-cyan-800/40 text-left flex items-start space-x-3 text-xs text-cyan-200">
-                        <i data-lucide="heart-pulse" class="w-5 h-5 text-cyan-400 shrink-0"></i>
-                        <div>
-                            <span class="font-bold block text-cyan-300 mb-0.5">Post-Workout Cool Down:</span>
-                            Spend 1–2 minutes doing light Cat-Cows and Child's Pose to decompress the spine.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="space-y-2">
-                    <button onclick="showHistoryScreen()" class="w-full py-3.5 bg-slate-800/80 hover:bg-slate-700 text-cyan-400 font-bold text-xs rounded-2xl transition-all border border-slate-700/60 flex items-center justify-center space-x-2">
-                        <i data-lucide="calendar" class="w-4 h-4"></i>
-                        <span>View Workout Log</span>
-                    </button>
-                    <button onclick="showHome()" class="w-full py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-2xl transition-all">
-                        Return to Home
-                    </button>
-                </div>
-            </section>
-
-        </main>
-
-        <!-- Toast Notification Alert Box -->
-        <div id="toast" class="hidden absolute top-14 left-4 right-4 bg-slate-800 border border-slate-700 text-slate-100 px-4 py-3 rounded-xl shadow-2xl text-xs flex items-center justify-between z-30 transition-all">
-            <span id="toast-message">Message text</span>
-            <button onclick="hideToast()" class="text-slate-400 hover:text-white">
-                <i data-lucide="x" class="w-4 h-4"></i>
-            </button>
+        <!-- Target Exercise Display -->
+        <div class="space-y-2">
+          <div id="set-badge" class="inline-block px-3 py-1 bg-slate-100 text-slate-600 font-bold rounded-full text-xs">Set 1 of 3</div>
+          <h3 id="exercise-name" class="text-3xl font-black text-slate-900 tracking-tight">Pike Push-ups</h3>
+          <p id="exercise-target" class="text-xl font-bold text-blue-600">8 Reps</p>
         </div>
+
+        <!-- Form/Safety Note -->
+        <div id="safety-note" class="bg-amber-50 border border-amber-200/60 rounded-xl p-3 text-amber-800 text-xs text-left flex items-start space-x-2">
+          <i data-lucide="shield-alert" class="w-4 h-4 text-amber-600 shrink-0 mt-0.5"></i>
+          <span id="safety-text">Keep spine neutral. Focus on vertical hip angle.</span>
+        </div>
+
+        <!-- Main Action Controls -->
+        <div class="space-y-3 pt-2">
+          <button onclick="completeExerciseStep()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/25 active:scale-[0.98] transition flex items-center justify-center space-x-2 text-lg">
+            <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+            <span>Done — Start Rest</span>
+          </button>
+
+          <!-- Back Button for Misclicks -->
+          <button id="exercise-back-btn" onclick="goToPreviousStep()" class="w-full py-2.5 text-slate-500 hover:text-slate-700 text-xs font-semibold rounded-lg border border-slate-200 hover:bg-slate-50 transition flex items-center justify-center space-x-1.5">
+            <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+            <span>Previous Exercise / Undo</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- SCREEN 3: REST TIMER -->
+      <div id="screen-rest" class="hidden bg-slate-900 text-white rounded-2xl shadow-xl p-6 text-center space-y-6 pulse-animation">
+        
+        <div class="flex items-center justify-between text-xs font-semibold text-slate-400">
+          <span id="rest-label" class="uppercase tracking-wider text-blue-400">REST BETWEEN EXERCISES</span>
+          <span id="rest-next-preview">Next: Pull-ups</span>
+        </div>
+
+        <!-- Timer Circle -->
+        <div class="space-y-1 py-2">
+          <div id="timer-display" class="text-6xl font-black tracking-tight font-mono text-white">01:00</div>
+          <p class="text-slate-400 text-xs">Catch your breath and prepare for next set</p>
+        </div>
+
+        <!-- Timer Adjustments -->
+        <div class="flex justify-center items-center space-x-3">
+          <button onclick="adjustTimer(-15)" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-lg text-xs transition border border-slate-700">-15s</button>
+          <button id="pause-btn" onclick="togglePauseTimer()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-xs transition flex items-center space-x-1">
+            <i data-lucide="pause" class="w-3.5 h-3.5"></i>
+            <span id="pause-text">Pause</span>
+          </button>
+          <button onclick="adjustTimer(15)" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-lg text-xs transition border border-slate-700">+15s</button>
+        </div>
+
+        <!-- Actions -->
+        <div class="space-y-2 pt-2">
+          <button onclick="skipRest()" class="w-full py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl transition flex items-center justify-center space-x-2 text-sm border border-slate-700">
+            <i data-lucide="fast-forward" class="w-4 h-4"></i>
+            <span>Skip Rest &amp; Start</span>
+          </button>
+          
+          <button onclick="goToPreviousStep()" class="w-full py-2 text-slate-400 hover:text-slate-200 text-xs font-medium flex items-center justify-center space-x-1">
+            <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+            <span>Back to Previous Set</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- SCREEN 4: WORKOUT COMPLETE -->
+      <div id="screen-complete" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 text-center space-y-6">
+        <div class="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto text-emerald-600">
+          <i data-lucide="trophy" class="w-10 h-10"></i>
+        </div>
+        <div>
+          <h2 class="text-2xl font-extrabold text-slate-900">Workout Complete!</h2>
+          <p class="text-slate-500 text-sm mt-1">Great job protecting your back and staying consistent.</p>
+        </div>
+
+        <!-- Stats Card -->
+        <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 flex justify-around text-center">
+          <div>
+            <div class="text-xs text-slate-400 font-semibold uppercase">Total Time</div>
+            <div id="summary-time" class="text-lg font-extrabold text-slate-800">18 mins</div>
+          </div>
+          <div class="border-r border-slate-200"></div>
+          <div>
+            <div class="text-xs text-slate-400 font-semibold uppercase">Completed</div>
+            <div class="text-lg font-extrabold text-slate-800">100%</div>
+          </div>
+        </div>
+
+        <button onclick="finishWorkout()" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/25 active:scale-[0.98] transition">
+          Save &amp; Return Home
+        </button>
+      </div>
 
     </div>
 
-    <!-- Application Script Logic -->
-    <script>
-        // --- Workout Plan Data Structure ---
-        const workoutPlan = [
-            // ================= WARM-UP =================
-            { type: 'warmup', phase: 'Warm-Up', title: 'Dynamic Warm-Up', setInfo: '5 - 10 Minutes', target: 'Completion', cue: 'Perform Wrist Prep, Cat-Cows, Thoracic Rotations, and Glute Bridges to activate the posterior chain and mobilize spine.' },
+    <!-- LOG / HISTORY TAB -->
+    <div id="log-tab" class="hidden space-y-4">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="calendar" class="w-5 h-5 text-blue-600"></i>
+            <h2 class="text-lg font-bold text-slate-900">Workout History</h2>
+          </div>
+          <button onclick="clearHistory()" class="text-xs text-rose-500 hover:text-rose-700 font-semibold">Clear</button>
+        </div>
 
-            // ================= SUPERSET A =================
-            // Round 1
-            { type: 'exercise', phase: 'Superset A', title: 'Pike Push-ups', setInfo: 'Round 1 of 3', target: '8 Reps', cue: 'Maintain a strong pike position. Keep hips high and lower back straight.' },
-            { type: 'rest', phase: 'Pair Rest', title: 'Rest Before Pull-ups', setInfo: 'Between Movements', duration: 60, cue: 'Take 60s rest before switching to Pull-ups.' },
-            { type: 'exercise', phase: 'Superset A', title: 'Pull-ups', setInfo: 'Round 1 of 3', target: '8 Reps', cue: 'Depress shoulders first, drive elbows down. Maintain braced hollow core.' },
-            { type: 'rest', phase: 'Round Rest', title: 'Superset Rest', setInfo: 'After Round 1', duration: 90, cue: 'Take 90s rest to fully recover before Round 2.' },
+        <!-- Log List Container -->
+        <div id="history-list" class="space-y-3">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
 
-            // Round 2
-            { type: 'exercise', phase: 'Superset A', title: 'Pike Push-ups', setInfo: 'Round 2 of 3', target: '8 Reps', cue: 'Keep core tight. Regress to elevated hands if hips sag or lower back arches.' },
-            { type: 'rest', phase: 'Pair Rest', title: 'Rest Before Pull-ups', setInfo: 'Between Movements', duration: 60, cue: 'Take 60s rest before switching to Pull-ups.' },
-            { type: 'exercise', phase: 'Superset A', title: 'Pull-ups', setInfo: 'Round 2 of 3', target: '8 Reps', cue: 'Full range of motion. Avoid kicking or swinging.' },
-            { type: 'rest', phase: 'Round Rest', title: 'Superset Rest', setInfo: 'After Round 2', duration: 90, cue: 'Take 90s rest before your final round of Superset A.' },
+  </main>
 
-            // Round 3
-            { type: 'exercise', phase: 'Superset A', title: 'Pike Push-ups', setInfo: 'Round 3 of 3', target: '8 Reps', cue: 'Final set! Keep head in neutral alignment with your spine.' },
-            { type: 'rest', phase: 'Pair Rest', title: 'Rest Before Pull-ups', setInfo: 'Between Movements', duration: 60, cue: 'Take 60s rest before switching to Pull-ups.' },
-            { type: 'exercise', phase: 'Superset A', title: 'Pull-ups', setInfo: 'Round 3 of 3', target: '8 Reps', cue: 'Finish strong with strict chest-to-bar pull control.' },
-            { type: 'rest', phase: 'Section Transition', title: 'Transition to Superset B', setInfo: 'Block Rest', duration: 120, cue: 'Great job! Rest 120s before starting Superset B (Dips & Squats).' },
+  <!-- Footer -->
+  <footer class="py-3 text-center text-xs text-slate-400 border-t border-slate-200/60 bg-white">
+    <span>Romain Workout App • Back Safety &amp; Routine Tracker</span>
+  </footer>
 
-            // ================= SUPERSET B =================
-            // Round 1
-            { type: 'exercise', phase: 'Superset B', title: 'Dips', setInfo: 'Round 1 of 3', target: '8 Reps', cue: 'Keep shoulders down and chest slightly forward. Avoid excessive depth if shoulders strain.' },
-            { type: 'rest', phase: 'Pair Rest', title: 'Rest Before Squats', setInfo: 'Between Movements', duration: 60, cue: 'Take 60s rest before switching to Squats.' },
-            { type: 'exercise', phase: 'Superset B', title: 'Bodyweight Squats', setInfo: 'Round 1 of 3', target: '8 Reps', cue: 'Keep chest tall, braced core, controlled depth. Avoid lower back rounding.' },
-            { type: 'rest', phase: 'Round Rest', title: 'Superset Rest', setInfo: 'After Round 1', duration: 90, cue: 'Take 90s rest to recover before Round 2 of Superset B.' },
+  <!-- Application Logic -->
+  <script>
+    // -------------------------------------------------------------
+    // WORKOUT DATA DEFINITION
+    // -------------------------------------------------------------
+    const workoutSteps = [
+      // SUPERSET A - ROUND 1
+      { type: 'exercise', block: 'SUPERSET A', name: 'Pike Push-ups', target: '8 Reps', setNum: 'Set 1 of 3', safety: 'Focus on vertical hip height. Regress to elevated feet if wrist or shoulder breaks form.' },
+      { type: 'rest', restTime: 60, label: 'REST BETWEEN EXERCISES', next: 'Pull-ups' },
+      { type: 'exercise', block: 'SUPERSET A', name: 'Pull-ups', target: '8 Reps', setNum: 'Set 1 of 3', safety: 'Engage core at top. Do not let lower back arch excessively during the pull.' },
+      { type: 'rest', restTime: 90, label: 'REST BETWEEN ROUNDS', next: 'Pike Push-ups (Set 2)' },
 
-            // Round 2
-            { type: 'exercise', phase: 'Superset B', title: 'Dips', setInfo: 'Round 2 of 3', target: '8 Reps', cue: 'Brace your core tight to prevent lumbar arching.' },
-            { type: 'rest', phase: 'Pair Rest', title: 'Rest Before Squats', setInfo: 'Between Movements', duration: 60, cue: 'Take 60s rest before switching to Squats.' },
-            { type: 'exercise', phase: 'Superset B', title: 'Bodyweight Squats', setInfo: 'Round 2 of 3', target: '8 Reps', cue: 'Controlled 2-second descent. Keep knees tracking over toes.' },
-            { type: 'rest', phase: 'Round Rest', title: 'Superset Rest', setInfo: 'After Round 2', duration: 90, cue: 'Take 90s rest before the final round of Superset B.' },
+      // SUPERSET A - ROUND 2
+      { type: 'exercise', block: 'SUPERSET A', name: 'Pike Push-ups', target: '8 Reps', setNum: 'Set 2 of 3', safety: 'Maintain controlled descent.' },
+      { type: 'rest', restTime: 60, label: 'REST BETWEEN EXERCISES', next: 'Pull-ups' },
+      { type: 'exercise', block: 'SUPERSET A', name: 'Pull-ups', target: '8 Reps', setNum: 'Set 2 of 3', safety: 'Controlled drop. Keep chest open.' },
+      { type: 'rest', restTime: 90, label: 'REST BETWEEN ROUNDS', next: 'Pike Push-ups (Set 3)' },
 
-            // Round 3
-            { type: 'exercise', phase: 'Superset B', title: 'Dips', setInfo: 'Round 3 of 3', target: '8 Reps', cue: 'Final set of dips! Keep elbows tucked close.' },
-            { type: 'rest', phase: 'Pair Rest', title: 'Rest Before Squats', setInfo: 'Between Movements', duration: 60, cue: 'Take 60s rest before switching to Squats.' },
-            { type: 'exercise', phase: 'Superset B', title: 'Bodyweight Squats', setInfo: 'Round 3 of 3', target: '8 Reps', cue: 'Finish all 8 reps with solid upright posture.' },
-            { type: 'rest', phase: 'Section Transition', title: 'Transition to Core Finisher', setInfo: 'Block Rest', duration: 120, cue: 'Rest 120s before starting the back-safe Core Finisher.' },
+      // SUPERSET A - ROUND 3
+      { type: 'exercise', block: 'SUPERSET A', name: 'Pike Push-ups', target: '8 Reps', setNum: 'Set 3 of 3', safety: 'Final push-up set. Keep form solid.' },
+      { type: 'rest', restTime: 60, label: 'REST BETWEEN EXERCISES', next: 'Pull-ups' },
+      { type: 'exercise', block: 'SUPERSET A', name: 'Pull-ups', target: '8 Reps', setNum: 'Set 3 of 3', safety: 'Final pull-up set. Drive elbows down.' },
+      { type: 'rest', restTime: 120, label: 'TRANSITION REST', next: 'Superset B: Dips' },
 
-            // ================= CORE & POSTERIOR CHAIN FINISHER =================
-            // Round 1
-            { type: 'exercise', phase: 'Core Finisher', title: 'Hollow Body Hold', setInfo: 'Round 1 of 3', target: '15s Hold', duration: 15, isHold: true, cue: 'CRITICAL: Keep lower back pressed COMPLETELY flat against the floor!' },
-            { type: 'rest', phase: 'Core Rest', title: 'Rest Before Bird-Dogs', setInfo: 'Transition', duration: 45, cue: '45s rest. Turn onto hands and knees for Bird-Dogs.' },
-            { type: 'exercise', phase: 'Core Finisher', title: 'Bird-Dogs', setInfo: 'Round 1 of 3', target: '8-10 / Side', cue: 'Slow, controlled movements with a neutral spine. Focus on glute activation.' },
-            { type: 'rest', phase: 'Core Rest', title: 'Round Rest', setInfo: 'After Round 1', duration: 60, cue: '60s rest before Round 2 of core.' },
+      // SUPERSET B - ROUND 1
+      { type: 'exercise', block: 'SUPERSET B', name: 'Dips', target: '8 Reps', setNum: 'Set 1 of 3', safety: 'Maintain slight forward lean. Do not dip deeper than shoulder comfort.' },
+      { type: 'rest', restTime: 60, label: 'REST BETWEEN EXERCISES', next: 'Bodyweight Squats' },
+      { type: 'exercise', block: 'SUPERSET B', name: 'Bodyweight Squats', target: '8 Reps', setNum: 'Set 1 of 3', safety: 'Keep lower back neutral. Avoid butt-wink at full depth.' },
+      { type: 'rest', restTime: 90, label: 'REST BETWEEN ROUNDS', next: 'Dips (Set 2)' },
 
-            // Round 2
-            { type: 'exercise', phase: 'Core Finisher', title: 'Hollow Body Hold', setInfo: 'Round 2 of 3', target: '15s Hold', duration: 15, isHold: true, cue: 'If lower back arches, bend your knees into a tuck position.' },
-            { type: 'rest', phase: 'Core Rest', title: 'Rest Before Bird-Dogs', setInfo: 'Transition', duration: 45, cue: '45s rest before Bird-Dogs.' },
-            { type: 'exercise', phase: 'Core Finisher', title: 'Bird-Dogs', setInfo: 'Round 2 of 3', target: '8-10 / Side', cue: 'Squeeze the glute at top extension without arching lower back.' },
-            { type: 'rest', phase: 'Core Rest', title: 'Round Rest', setInfo: 'After Round 2', duration: 60, cue: '60s rest before final core round.' },
+      // SUPERSET B - ROUND 2
+      { type: 'exercise', block: 'SUPERSET B', name: 'Dips', target: '8 Reps', setNum: 'Set 2 of 3', safety: 'Core tight, smooth tempo.' },
+      { type: 'rest', restTime: 60, label: 'REST BETWEEN EXERCISES', next: 'Bodyweight Squats' },
+      { type: 'exercise', block: 'SUPERSET B', name: 'Bodyweight Squats', target: '8 Reps', setNum: 'Set 2 of 3', safety: 'Drive through heels. Brace stomach muscles.' },
+      { type: 'rest', restTime: 90, label: 'REST BETWEEN ROUNDS', next: 'Dips (Set 3)' },
 
-            // Round 3
-            { type: 'exercise', phase: 'Core Finisher', title: 'Hollow Body Hold', setInfo: 'Round 3 of 3', target: '15s Hold', duration: 15, isHold: true, cue: 'Final hold! Keep lower back glued to the floor.' },
-            { type: 'rest', phase: 'Core Rest', title: 'Rest Before Bird-Dogs', setInfo: 'Transition', duration: 45, cue: '45s rest before the last set.' },
-            { type: 'exercise', phase: 'Core Finisher', title: 'Bird-Dogs', setInfo: 'Round 3 of 3', target: '8-10 / Side', cue: 'Final set! Controlled slow movements for back stability.' }
-        ];
+      // SUPERSET B - ROUND 3
+      { type: 'exercise', block: 'SUPERSET B', name: 'Dips', target: '8 Reps', setNum: 'Set 3 of 3', safety: 'Finish strong with full control.' },
+      { type: 'rest', restTime: 60, label: 'REST BETWEEN EXERCISES', next: 'Bodyweight Squats' },
+      { type: 'exercise', block: 'SUPERSET B', name: 'Bodyweight Squats', target: '8 Reps', setNum: 'Set 3 of 3', safety: 'Controlled rep speed.' },
+      { type: 'rest', restTime: 120, label: 'TRANSITION REST', next: 'Core Finisher: Hollow Body' },
 
-        // --- App State ---
-        let currentStepIndex = 0;
-        let timerInterval = null;
-        let workoutStartTime = null;
-        let secondsRemaining = 0;
-        let activeTotalDuration = 0;
-        let isPaused = false;
-        let soundEnabled = true;
-        let audioCtx = null;
+      // CORE & BACK STABILITY BLOCK
+      { type: 'exercise', block: 'CORE FINISHER', name: 'Hollow Body Hold', target: '15 Seconds Hold', setNum: 'Set 1 of 3', safety: 'CRITICAL: Press lower back firmly into floor. Bend knees if lower back lifts!' },
+      { type: 'rest', restTime: 45, label: 'REST BETWEEN EXERCISES', next: 'Bird-Dogs' },
+      { type: 'exercise', block: 'CORE FINISHER', name: 'Bird-Dogs', target: '8-10 Reps per side', setNum: 'Set 1 of 3', safety: 'Squeeze glute at extension. Replaces Supermans to protect lower back.' },
+      { type: 'rest', restTime: 60, label: 'REST BETWEEN ROUNDS', next: 'Hollow Body (Set 2)' },
 
-        // --- Web Audio Sound Feedback ---
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
+      { type: 'exercise', block: 'CORE FINISHER', name: 'Hollow Body Hold', target: '15 Seconds Hold', setNum: 'Set 2 of 3', safety: 'Keep lower back glued to floor throughout hold.' },
+      { type: 'rest', restTime: 45, label: 'REST BETWEEN EXERCISES', next: 'Bird-Dogs' },
+      { type: 'exercise', block: 'CORE FINISHER', name: 'Bird-Dogs', target: '8-10 Reps per side', setNum: 'Set 2 of 3', safety: 'Maintain table-top flat back without arching.' },
+      { type: 'rest', restTime: 60, label: 'REST BETWEEN ROUNDS', next: 'Hollow Body (Set 3)' },
+
+      { type: 'exercise', block: 'CORE FINISHER', name: 'Hollow Body Hold', target: '15 Seconds Hold', setNum: 'Set 3 of 3', safety: 'Final core hold. Quality form above all.' },
+      { type: 'rest', restTime: 45, label: 'REST BETWEEN EXERCISES', next: 'Bird-Dogs' },
+      { type: 'exercise', block: 'CORE FINISHER', name: 'Bird-Dogs', target: '8-10 Reps per side', setNum: 'Set 3 of 3', safety: 'Finish with steady hips and full extension.' }
+    ];
+
+    // -------------------------------------------------------------
+    // APP STATE MANAGEMENT
+    // -------------------------------------------------------------
+    let currentStepIndex = 0;
+    let timerInterval = null;
+    let timeRemaining = 0;
+    let isPaused = false;
+    let workoutStartTime = null;
+
+    // Initialize Icons
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      renderHistory();
+    });
+
+    // Navigation Tab Switcher
+    function switchTab(tab) {
+      const workoutTab = document.getElementById('workout-tab');
+      const logTab = document.getElementById('log-tab');
+      const workoutBtn = document.getElementById('nav-workout-btn');
+      const logBtn = document.getElementById('nav-log-btn');
+
+      if (tab === 'workout') {
+        workoutTab.classList.remove('hidden');
+        logTab.classList.add('hidden');
+        workoutBtn.className = 'px-3 py-1.5 rounded-md bg-white text-blue-700 shadow-sm transition';
+        logBtn.className = 'px-3 py-1.5 rounded-md text-blue-100 hover:text-white transition';
+      } else {
+        workoutTab.classList.add('hidden');
+        logTab.classList.remove('hidden');
+        logBtn.className = 'px-3 py-1.5 rounded-md bg-white text-blue-700 shadow-sm transition';
+        workoutBtn.className = 'px-3 py-1.5 rounded-md text-blue-100 hover:text-white transition';
+        renderHistory();
+      }
+    }
+
+    // Start Workout
+    function startWorkout() {
+      currentStepIndex = 0;
+      workoutStartTime = new Date();
+      showScreen('screen-exercise');
+      renderStep();
+    }
+
+    // Main Renderer
+    function renderStep() {
+      const step = workoutSteps[currentStepIndex];
+
+      if (!step) {
+        completeWorkout();
+        return;
+      }
+
+      if (step.type === 'exercise') {
+        clearInterval(timerInterval);
+        showScreen('screen-exercise');
+
+        document.getElementById('block-title').innerText = step.block;
+        document.getElementById('set-badge').innerText = step.setNum;
+        document.getElementById('exercise-name').innerText = step.name;
+        document.getElementById('exercise-target').innerText = step.target;
+        document.getElementById('safety-text').innerText = step.safety;
+
+        // Calculate progress percentage
+        const totalExerciseSteps = workoutSteps.filter(s => s.type === 'exercise').length;
+        const completedExerciseSteps = workoutSteps.slice(0, currentStepIndex).filter(s => s.type === 'exercise').length + 1;
+        document.getElementById('exercise-progress').innerText = `Step ${completedExerciseSteps} of ${totalExerciseSteps}`;
+
+        // Toggle back button visibility
+        const backBtn = document.getElementById('exercise-back-btn');
+        if (currentStepIndex === 0) {
+          backBtn.classList.add('hidden');
+        } else {
+          backBtn.classList.remove('hidden');
         }
 
-        function playBeep(frequency = 880, duration = 0.15) {
-            if (!soundEnabled) return;
-            try {
-                initAudio();
-                if (audioCtx.state === 'suspended') {
-                    audioCtx.resume();
-                }
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(frequency, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + duration);
-            } catch (e) {
-                console.log('Audio playback constrained');
-            }
+      } else if (step.type === 'rest') {
+        showScreen('screen-rest');
+        document.getElementById('rest-label').innerText = step.label;
+        document.getElementById('rest-next-preview').innerText = `Next: ${step.next}`;
+        startTimer(step.restTime);
+      }
+    }
+
+    // Step Advancement
+    function completeExerciseStep() {
+      currentStepIndex++;
+      renderStep();
+    }
+
+    function goToPreviousStep() {
+      if (currentStepIndex > 0) {
+        clearInterval(timerInterval);
+        currentStepIndex--;
+        // If stepping back lands on a rest timer, jump once more back to the preceding exercise
+        if (workoutSteps[currentStepIndex].type === 'rest') {
+          currentStepIndex--;
         }
+        renderStep();
+      }
+    }
 
-        function playCompletionBeep() {
-            playBeep(523.25, 0.1);
-            setTimeout(() => playBeep(659.25, 0.1), 120);
-            setTimeout(() => playBeep(783.99, 0.25), 240);
-        }
+    // Timer Implementation
+    function startTimer(seconds) {
+      clearInterval(timerInterval);
+      timeRemaining = seconds;
+      isPaused = false;
+      updatePauseButtonUI();
+      updateTimerDisplay();
 
-        // --- Navigation Logic ---
-        function setTabActive(tabName) {
-            const btnWorkout = document.getElementById('tab-btn-workout');
-            const btnHistory = document.getElementById('tab-btn-history');
+      timerInterval = setInterval(() => {
+        if (!isPaused) {
+          timeRemaining--;
+          updateTimerDisplay();
 
-            if (tabName === 'workout') {
-                btnWorkout.className = 'py-2.5 rounded-xl bg-slate-800 text-cyan-400 shadow transition-all flex items-center justify-center space-x-2';
-                btnHistory.className = 'py-2.5 rounded-xl text-slate-400 hover:text-slate-200 transition-all flex items-center justify-center space-x-2';
-            } else {
-                btnHistory.className = 'py-2.5 rounded-xl bg-slate-800 text-cyan-400 shadow transition-all flex items-center justify-center space-x-2';
-                btnWorkout.className = 'py-2.5 rounded-xl text-slate-400 hover:text-slate-200 transition-all flex items-center justify-center space-x-2';
-            }
-        }
-
-        function showScreen(screenId) {
-            document.getElementById('screen-home').classList.add('hidden');
-            document.getElementById('screen-history').classList.add('hidden');
-            document.getElementById('screen-active').classList.add('hidden');
-            document.getElementById('screen-summary').classList.add('hidden');
-
-            document.getElementById(screenId).classList.remove('hidden');
-
-            const navTabs = document.getElementById('nav-tabs');
-            if (screenId === 'screen-active' || screenId === 'screen-summary') {
-                navTabs.classList.add('hidden');
-            } else {
-                navTabs.classList.remove('hidden');
-            }
-        }
-
-        function showHome() {
+          if (timeRemaining <= 0) {
             clearInterval(timerInterval);
-            setTabActive('workout');
-            renderHistoryBanner();
-            showScreen('screen-home');
-        }
-
-        function showHistoryScreen() {
-            clearInterval(timerInterval);
-            setTabActive('history');
-            renderHistoryLogList();
-            showScreen('screen-history');
-        }
-
-        function updateClock() {
-            const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            document.getElementById('current-time').innerText = `${hours}:${minutes}`;
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        function toggleSound() {
-            soundEnabled = !soundEnabled;
-            const icon = document.getElementById('sound-icon');
-            if (soundEnabled) {
-                icon.setAttribute('data-lucide', 'volume-2');
-                showToast('Sound enabled');
-            } else {
-                icon.setAttribute('data-lucide', 'volume-x');
-                showToast('Sound muted');
-            }
-            lucide.createIcons();
-        }
-
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toast-message').innerText = msg;
-            toast.classList.remove('hidden');
-            setTimeout(() => {
-                toast.classList.add('hidden');
-            }, 2500);
-        }
-
-        function hideToast() {
-            document.getElementById('toast').classList.add('hidden');
-        }
-
-        // --- Workout Execution ---
-        function startWorkout() {
-            initAudio();
-            currentStepIndex = 0;
-            workoutStartTime = new Date();
-            showScreen('screen-active');
+            playBeepSound();
+            currentStepIndex++;
             renderStep();
+          }
         }
+      }, 1000);
+    }
 
-        function renderStep() {
-            clearInterval(timerInterval);
-            isPaused = false;
-            updatePauseButtonUI();
+    function updateTimerDisplay() {
+      const mins = Math.floor(timeRemaining / 60);
+      const secs = timeRemaining % 60;
+      document.getElementById('timer-display').innerText = 
+        `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
 
-            const step = workoutPlan[currentStepIndex];
-            const totalSteps = workoutPlan.length;
+    function adjustTimer(seconds) {
+      timeRemaining = Math.max(0, timeRemaining + seconds);
+      updateTimerDisplay();
+    }
 
-            // Overall Progress
-            const progressPct = ((currentStepIndex + 1) / totalSteps) * 100;
-            document.getElementById('overall-progress-bar').style.width = `${progressPct}%`;
-            document.getElementById('workout-phase-label').innerText = step.phase;
-            document.getElementById('workout-step-count').innerText = `Step ${currentStepIndex + 1} of ${totalSteps}`;
+    function togglePauseTimer() {
+      isPaused = !isPaused;
+      updatePauseButtonUI();
+    }
 
-            // Set Title & Cues
-            document.getElementById('exercise-title').innerText = step.title;
-            document.getElementById('set-badge').innerText = step.setInfo;
-            document.getElementById('form-cue-text').innerText = step.cue;
+    function updatePauseButtonUI() {
+      const pauseText = document.getElementById('pause-text');
+      const pauseBtn = document.getElementById('pause-btn');
+      if (isPaused) {
+        pauseText.innerText = 'Resume';
+        pauseBtn.className = 'px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs transition flex items-center space-x-1';
+      } else {
+        pauseText.innerText = 'Pause';
+        pauseBtn.className = 'px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-xs transition flex items-center space-x-1';
+      }
+    }
 
-            // Enable/Disable Previous Button
-            const prevBtn = document.getElementById('prev-btn');
-            prevBtn.disabled = (currentStepIndex === 0);
+    function skipRest() {
+      clearInterval(timerInterval);
+      currentStepIndex++;
+      renderStep();
+    }
 
-            const repDisplay = document.getElementById('rep-target-display');
-            const timerDisplay = document.getElementById('timer-display');
-            const timerAdjust = document.getElementById('timer-adjust-controls');
-            const cueIcon = document.getElementById('cue-icon');
+    // Audio Feedback for Timer Completion
+    function playBeepSound() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, ctx.currentTime); // High pitch A5
+        gain.gain.setValueAtTime(0.1, ctx.currentTime);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.5);
+      } catch (e) {
+        // Fallback for browsers with restricted audio autoplay policies
+      }
+    }
 
-            if (step.type === 'warmup') {
-                repDisplay.classList.remove('hidden');
-                timerDisplay.classList.add('hidden');
-                timerAdjust.classList.add('hidden');
+    // Complete & Save Workout Log
+    function completeWorkout() {
+      clearInterval(timerInterval);
+      showScreen('screen-complete');
 
-                cueIcon.setAttribute('data-lucide', 'flame');
-                document.getElementById('target-reps').innerText = 'Complete';
-                updatePrimaryButton('Warm-Up Done', 'check');
-            } else if (step.type === 'rest' || step.isHold) {
-                // Timer View
-                repDisplay.classList.add('hidden');
-                timerDisplay.classList.remove('hidden');
-                timerAdjust.classList.remove('hidden');
+      const endTime = new Date();
+      const elapsedMins = Math.max(1, Math.round((endTime - workoutStartTime) / 60000));
+      document.getElementById('summary-time').innerText = `${elapsedMins} mins`;
 
-                cueIcon.setAttribute('data-lucide', 'clock');
-                activeTotalDuration = step.duration;
-                secondsRemaining = step.duration;
+      saveWorkoutToHistory(elapsedMins);
+    }
 
-                document.getElementById('timer-seconds').innerText = secondsRemaining;
-                document.getElementById('timer-sublabel').innerText = step.isHold ? 'Hold Secs' : 'Rest Secs';
+    function finishWorkout() {
+      showScreen('screen-idle');
+    }
 
-                updatePrimaryButton(step.isHold ? 'Skip Hold' : 'Skip Rest', 'skip-forward');
-                startCountdown();
-            } else {
-                // Exercise Rep View
-                repDisplay.classList.remove('hidden');
-                timerDisplay.classList.add('hidden');
-                timerAdjust.classList.add('hidden');
+    // Local Storage History Management
+    function saveWorkoutToHistory(durationMins) {
+      const history = JSON.parse(localStorage.getItem('romain_workout_history') || '[]');
+      const newEntry = {
+        id: Date.now(),
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+        duration: durationMins
+      };
+      history.unshift(newEntry);
+      localStorage.setItem('romain_workout_history', JSON.stringify(history));
+    }
 
-                cueIcon.setAttribute('data-lucide', 'shield-check');
-                document.getElementById('target-reps').innerText = step.target;
-                updatePrimaryButton('Done with Set', 'check');
-            }
-            lucide.createIcons();
-        }
+    function renderHistory() {
+      const historyList = document.getElementById('history-list');
+      const history = JSON.parse(localStorage.getItem('romain_workout_history') || '[]');
 
-        function startCountdown() {
-            const circleProgress = document.getElementById('timer-circle-progress');
-            const maxOffset = 515;
+      if (history.length === 0) {
+        historyList.innerHTML = `
+          <div class="text-center py-8 text-slate-400 text-sm">
+            <i data-lucide="dumbbell" class="w-8 h-8 mx-auto mb-2 opacity-40"></i>
+            <p>No completed workouts logged yet.</p>
+          </div>
+        `;
+      } else {
+        historyList.innerHTML = history.map(item => `
+          <div class="p-3 bg-slate-50 border border-slate-100 rounded-xl flex justify-between items-center text-sm">
+            <div>
+              <div class="font-bold text-slate-800">${item.date}</div>
+              <div class="text-xs text-slate-400">${item.time}</div>
+            </div>
+            <div class="text-right">
+              <span class="inline-block px-2.5 py-1 bg-blue-50 text-blue-700 font-bold rounded-lg text-xs">
+                ${item.duration} mins
+              </span>
+            </div>
+          </div>
+        `).join('');
+      }
+      lucide.createIcons();
+    }
 
-            function updateCircle() {
-                const fraction = Math.max(0, secondsRemaining) / activeTotalDuration;
-                const offset = maxOffset * (1 - fraction);
-                circleProgress.style.strokeDashoffset = offset;
-            }
+    function clearHistory() {
+      if (confirm('Are you sure you want to clear your workout history?')) {
+        localStorage.removeItem('romain_workout_history');
+        renderHistory();
+      }
+    }
 
-            updateCircle();
-
-            timerInterval = setInterval(() => {
-                if (isPaused) return;
-
-                secondsRemaining--;
-                document.getElementById('timer-seconds').innerText = Math.max(0, secondsRemaining);
-                updateCircle();
-
-                if (secondsRemaining <= 3 && secondsRemaining > 0) {
-                    playBeep(440, 0.1);
-                }
-
-                if (secondsRemaining <= 0) {
-                    clearInterval(timerInterval);
-                    playCompletionBeep();
-                    advanceStep();
-                }
-            }, 1000);
-        }
-
-        function adjustTimer(amount) {
-            secondsRemaining += amount;
-            if (secondsRemaining < 1) secondsRemaining = 1;
-            if (secondsRemaining > activeTotalDuration) activeTotalDuration = secondsRemaining;
-            document.getElementById('timer-seconds').innerText = secondsRemaining;
-            showToast(`Timer adjusted (${amount > 0 ? '+' : ''}${amount}s)`);
-        }
-
-        function handlePrimaryAction() {
-            advanceStep();
-        }
-
-        function advanceStep() {
-            clearInterval(timerInterval);
-            if (currentStepIndex < workoutPlan.length - 1) {
-                currentStepIndex++;
-                renderStep();
-            } else {
-                finishWorkout();
-            }
-        }
-
-        // --- PREVIOUS / BACK STEP NAVIGATION ---
-        function previousStep() {
-            if (currentStepIndex > 0) {
-                clearInterval(timerInterval);
-                currentStepIndex--;
-                renderStep();
-                showToast('Returned to previous step');
-            }
-        }
-
-        function skipStep() {
-            advanceStep();
-        }
-
-        function togglePause() {
-            isPaused = !isPaused;
-            updatePauseButtonUI();
-        }
-
-        function updatePauseButtonUI() {
-            const btnText = document.getElementById('pause-text');
-            const btnIcon = document.getElementById('pause-icon');
-            if (btnText && btnIcon) {
-                if (isPaused) {
-                    btnText.innerText = 'Resume';
-                    btnIcon.setAttribute('data-lucide', 'play');
-                } else {
-                    btnText.innerText = 'Pause';
-                    btnIcon.setAttribute('data-lucide', 'pause');
-                }
-                lucide.createIcons();
-            }
-        }
-
-        function updatePrimaryButton(text, iconName) {
-            document.getElementById('primary-action-text').innerText = text;
-            document.getElementById('primary-action-icon').setAttribute('data-lucide', iconName);
-            lucide.createIcons();
-        }
-
-        function abortWorkoutConfirm() {
-            if (confirm('Are you sure you want to quit this workout? Progress won\'t be saved.')) {
-                showHome();
-            }
-        }
-
-        function finishWorkout() {
-            const endTime = new Date();
-            const elapsedMs = endTime - workoutStartTime;
-            const totalMinutes = Math.floor(elapsedMs / 60000);
-            const totalSeconds = Math.floor((elapsedMs % 60000) / 1000);
-            
-            const timeStr = `${String(totalMinutes).padStart(2, '0')}:${String(totalSeconds).padStart(2, '0')}`;
-            document.getElementById('summary-total-time').innerText = timeStr;
-
-            // Save to LocalStorage
-            saveWorkoutLog(timeStr);
-
-            showScreen('screen-summary');
-
-            // Trigger Confetti
-            if (typeof confetti === 'function') {
-                confetti({
-                    particleCount: 80,
-                    spread: 70,
-                    origin: { y: 0.6 }
-                });
-            }
-        }
-
-        // --- LocalStorage Persistence & History Management ---
-        function saveWorkoutLog(durationStr) {
-            try {
-                const history = JSON.parse(localStorage.getItem('fit_routine_history') || '[]');
-                const now = new Date();
-                history.unshift({
-                    id: Date.now(),
-                    date: now.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }),
-                    time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                    duration: durationStr,
-                    completedSets: 18,
-                    routine: 'Romain Bodyweight Routine'
-                });
-                localStorage.setItem('fit_routine_history', JSON.stringify(history));
-            } catch(e) {
-                console.log('LocalStorage unavailable');
-            }
-        }
-
-        function renderHistoryBanner() {
-            try {
-                const history = JSON.parse(localStorage.getItem('fit_routine_history') || '[]');
-                if (history.length > 0) {
-                    const last = history[0];
-                    document.getElementById('history-banner').classList.remove('hidden');
-                    document.getElementById('last-workout-text').innerText = `Last: ${last.date} (${last.duration})`;
-                    document.getElementById('completed-count-text').innerText = `${history.length} logged`;
-                } else {
-                    document.getElementById('history-banner').classList.add('hidden');
-                }
-            } catch(e) {}
-        }
-
-        function renderHistoryLogList() {
-            const container = document.getElementById('history-list-container');
-            try {
-                const history = JSON.parse(localStorage.getItem('fit_routine_history') || '[]');
-                
-                if (history.length === 0) {
-                    container.innerHTML = `
-                        <div class="py-12 text-center text-slate-500 space-y-2">
-                            <i data-lucide="calendar-x" class="w-10 h-10 mx-auto stroke-1"></i>
-                            <p class="text-xs font-medium">No completed workouts logged yet.</p>
-                            <p class="text-[11px] text-slate-600">Start your first routine to build your streak!</p>
-                        </div>
-                    `;
-                } else {
-                    container.innerHTML = history.map(item => `
-                        <div class="p-4 rounded-2xl bg-slate-800/60 border border-slate-700/50 space-y-2">
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="font-bold text-cyan-400 flex items-center space-x-1.5">
-                                    <i data-lucide="calendar-check" class="w-3.5 h-3.5"></i>
-                                    <span>${item.date}</span>
-                                </span>
-                                <span class="text-slate-400">${item.time || ''}</span>
-                            </div>
-                            <div class="flex justify-between items-baseline pt-1">
-                                <span class="text-xs font-semibold text-slate-100">${item.routine || 'Bodyweight Workout'}</span>
-                                <span class="text-xs font-bold text-teal-400 bg-teal-950/60 border border-teal-800/50 px-2 py-0.5 rounded-full">
-                                    ${item.duration}
-                                </span>
-                            </div>
-                            <div class="text-[10px] text-slate-400 pt-1 border-t border-slate-700/40 flex justify-between">
-                                <span>18 Sets Completed</span>
-                                <span class="text-teal-400 font-medium">Back-Safe</span>
-                            </div>
-                        </div>
-                    `).join('');
-                }
-            } catch(e) {
-                container.innerHTML = `<p class="text-xs text-rose-400 text-center py-4">Unable to load workout history.</p>`;
-            }
-            lucide.createIcons();
-        }
-
-        function clearHistoryLog() {
-            if (confirm('Are you sure you want to clear all workout history logs?')) {
-                try {
-                    localStorage.removeItem('fit_routine_history');
-                    renderHistoryLogList();
-                    renderHistoryBanner();
-                    showToast('Workout history cleared');
-                } catch(e) {}
-            }
-        }
-
-        // Initialize App
-        window.onload = function() {
-            lucide.createIcons();
-            renderHistoryBanner();
-        };
-    </script>
+    // Screen Helper
+    function showScreen(screenId) {
+      ['screen-idle', 'screen-exercise', 'screen-rest', 'screen-complete'].forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+      });
+      document.getElementById(screenId).classList.remove('hidden');
+    }
+  </script>
 </body>
 </html>
