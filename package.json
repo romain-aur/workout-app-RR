@@ -1,0 +1,14 @@
+{
+  "name": "romain-workout-app",
+  "version": "1.0.0",
+  "description": "Native Workout App wrapper",
+  "scripts": {
+    "build": "echo 'No build step needed for single file'"
+  },
+  dependencies: {},
+  "devDependencies": {
+    "@capacitor/cli": "^5.0.0",
+    "@capacitor/core": "^5.0.0",
+    "@capacitor/android": "^5.0.0"
+  }
+}
