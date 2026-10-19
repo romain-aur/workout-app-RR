@@ -1,0 +1,6 @@
+{
+  "appId": "com.romain.workoutapp",
+  "appName": "Romain Workout App",
+  "webDir": ".",
+  "bundledWebRuntime": false
+}
