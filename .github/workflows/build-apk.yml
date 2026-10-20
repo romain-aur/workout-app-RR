@@ -26,13 +26,15 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Create Capacitor Config
+      - name: Prepare Web Directory & Config
         run: |
+          mkdir -p www
+          cp index.html www/
           cat << 'EOF' > capacitor.config.json
           {
             "appId": "com.romain.workoutapp",
             "appName": "Romain Workout App",
-            "webDir": ".",
+            "webDir": "www",
             "bundledWebRuntime": false
           }
           EOF
