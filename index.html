@@ -1,19 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Romain Workout App</title>
   
   <!-- Mobile & PWA Setup -->
-  <meta name="theme-color" content="#2563eb">
+  <meta name="theme-color" content="#0f172a">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Romain Workout">
-  
-  <!-- Inline Web App Manifest Data URI for PWABuilder compatibility -->
-<link rel="manifest" href="manifest.json">
-  
+
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons -->
@@ -35,18 +32,18 @@
     }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between antialiased">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between antialiased">
 
   <!-- Header -->
-  <header class="bg-blue-600 text-white shadow-md sticky top-0 z-50">
+  <header class="bg-slate-900 text-white border-b border-slate-800 shadow-lg sticky top-0 z-50">
     <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center space-x-2">
-        <i data-lucide="dumbbell" class="w-6 h-6"></i>
+        <i data-lucide="dumbbell" class="w-6 h-6 text-blue-500"></i>
         <h1 class="text-xl font-bold tracking-tight">Romain Workout App</h1>
       </div>
-      <div class="flex space-x-1 bg-blue-700/60 p-1 rounded-lg text-xs font-semibold">
-        <button id="nav-workout-btn" onclick="switchTab('workout')" class="px-3 py-1.5 rounded-md bg-white text-blue-700 shadow-sm transition">Workout</button>
-        <button id="nav-log-btn" onclick="switchTab('log')" class="px-3 py-1.5 rounded-md text-blue-100 hover:text-white transition">History</button>
+      <div class="flex space-x-1 bg-slate-800 p-1 rounded-lg text-xs font-semibold border border-slate-700">
+        <button id="nav-workout-btn" onclick="switchTab('workout')" class="px-3 py-1.5 rounded-md bg-blue-600 text-white shadow-sm transition">Workout</button>
+        <button id="nav-log-btn" onclick="switchTab('log')" class="px-3 py-1.5 rounded-md text-slate-400 hover:text-white transition">History</button>
       </div>
     </div>
   </header>
@@ -58,71 +55,71 @@
     <div id="workout-tab" class="space-y-4">
 
       <!-- SCREEN 1: IDLE / START -->
-      <div id="screen-idle" class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 text-center space-y-6">
-        <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto text-blue-600">
+      <div id="screen-idle" class="bg-slate-900 rounded-2xl shadow-xl border border-slate-800 p-6 text-center space-y-6">
+        <div class="w-20 h-20 bg-blue-500/10 border border-blue-500/20 rounded-full flex items-center justify-center mx-auto text-blue-500">
           <i data-lucide="play-circle" class="w-10 h-10"></i>
         </div>
         <div>
-          <h2 class="text-2xl font-extrabold text-slate-900">Ready to Train?</h2>
-          <p class="text-slate-500 text-sm mt-1">Guided bodyweight session with dynamic rest timers and lower back protection cues.</p>
+          <h2 class="text-2xl font-extrabold text-white">Ready to Train?</h2>
+          <p class="text-slate-400 text-sm mt-1">Guided bodyweight session with dynamic rest timers and lower back protection cues.</p>
         </div>
 
         <!-- Routine Breakdown Overview -->
-        <div class="bg-slate-50 rounded-xl p-4 text-left space-y-3 text-sm border border-slate-100">
-          <div class="font-bold text-slate-700 text-xs uppercase tracking-wider">Workout Overview</div>
+        <div class="bg-slate-950/60 rounded-xl p-4 text-left space-y-3 text-sm border border-slate-800">
+          <div class="font-bold text-slate-400 text-xs uppercase tracking-wider">Workout Overview</div>
           <div class="space-y-2">
-            <div class="flex justify-between items-center text-slate-700">
+            <div class="flex justify-between items-center text-slate-200">
               <span class="font-medium">Superset A:</span>
-              <span class="text-slate-500 text-xs">Pike Push-ups &amp; Pull-ups (3x8)</span>
+              <span class="text-slate-400 text-xs">Pike Push-ups &amp; Pull-ups (3x8)</span>
             </div>
-            <div class="flex justify-between items-center text-slate-700">
+            <div class="flex justify-between items-center text-slate-200">
               <span class="font-medium">Superset B:</span>
-              <span class="text-slate-500 text-xs">Dips &amp; Bodyweight Squats (3x8)</span>
+              <span class="text-slate-400 text-xs">Dips &amp; Bodyweight Squats (3x8)</span>
             </div>
-            <div class="flex justify-between items-center text-slate-700">
+            <div class="flex justify-between items-center text-slate-200">
               <span class="font-medium">Core Finisher:</span>
-              <span class="text-slate-500 text-xs">Hollow Holds &amp; Bird-Dogs</span>
+              <span class="text-slate-400 text-xs">Hollow Holds &amp; Bird-Dogs</span>
             </div>
           </div>
         </div>
 
-        <button onclick="startWorkout()" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/25 active:scale-[0.98] transition flex items-center justify-center space-x-2 text-lg">
+        <button onclick="startWorkout()" class="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-600/25 active:scale-[0.98] transition flex items-center justify-center space-x-2 text-lg">
           <i data-lucide="zap" class="w-5 h-5"></i>
           <span>Start Workout</span>
         </button>
       </div>
 
       <!-- SCREEN 2: EXERCISE ACTIVE -->
-      <div id="screen-exercise" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 text-center space-y-6">
+      <div id="screen-exercise" class="hidden bg-slate-900 rounded-2xl shadow-xl border border-slate-800 p-6 text-center space-y-6">
         
         <!-- Header Progress -->
-        <div class="flex items-center justify-between text-xs font-semibold text-slate-400 border-b border-slate-100 pb-3">
-          <span id="block-title" class="uppercase tracking-wider text-blue-600">SUPERSET A</span>
+        <div class="flex items-center justify-between text-xs font-semibold text-slate-400 border-b border-slate-800 pb-3">
+          <span id="block-title" class="uppercase tracking-wider text-blue-400">SUPERSET A</span>
           <span id="exercise-progress">Step 1 of 18</span>
         </div>
 
         <!-- Target Exercise Display -->
         <div class="space-y-2">
-          <div id="set-badge" class="inline-block px-3 py-1 bg-slate-100 text-slate-600 font-bold rounded-full text-xs">Set 1 of 3</div>
-          <h3 id="exercise-name" class="text-3xl font-black text-slate-900 tracking-tight">Pike Push-ups</h3>
-          <p id="exercise-target" class="text-xl font-bold text-blue-600">8 Reps</p>
+          <div id="set-badge" class="inline-block px-3 py-1 bg-slate-800 border border-slate-700 text-slate-300 font-bold rounded-full text-xs">Set 1 of 3</div>
+          <h3 id="exercise-name" class="text-3xl font-black text-white tracking-tight">Pike Push-ups</h3>
+          <p id="exercise-target" class="text-xl font-bold text-blue-400">8 Reps</p>
         </div>
 
         <!-- Form/Safety Note -->
-        <div id="safety-note" class="bg-amber-50 border border-amber-200/60 rounded-xl p-3 text-amber-800 text-xs text-left flex items-start space-x-2">
-          <i data-lucide="shield-alert" class="w-4 h-4 text-amber-600 shrink-0 mt-0.5"></i>
+        <div id="safety-note" class="bg-amber-950/40 border border-amber-500/30 rounded-xl p-3 text-amber-200 text-xs text-left flex items-start space-x-2">
+          <i data-lucide="shield-alert" class="w-4 h-4 text-amber-400 shrink-0 mt-0.5"></i>
           <span id="safety-text">Keep spine neutral. Focus on vertical hip angle.</span>
         </div>
 
         <!-- Main Action Controls -->
         <div class="space-y-3 pt-2">
-          <button onclick="completeExerciseStep()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/25 active:scale-[0.98] transition flex items-center justify-center space-x-2 text-lg">
+          <button onclick="completeExerciseStep()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-lg shadow-emerald-600/25 active:scale-[0.98] transition flex items-center justify-center space-x-2 text-lg">
             <i data-lucide="check-circle-2" class="w-6 h-6"></i>
             <span>Done — Start Rest</span>
           </button>
 
           <!-- Back Button for Misclicks -->
-          <button id="exercise-back-btn" onclick="goToPreviousStep()" class="w-full py-2.5 text-slate-500 hover:text-slate-700 text-xs font-semibold rounded-lg border border-slate-200 hover:bg-slate-50 transition flex items-center justify-center space-x-1.5">
+          <button id="exercise-back-btn" onclick="goToPreviousStep()" class="w-full py-2.5 text-slate-400 hover:text-slate-200 text-xs font-semibold rounded-lg border border-slate-800 hover:bg-slate-800 transition flex items-center justify-center space-x-1.5">
             <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
             <span>Previous Exercise / Undo</span>
           </button>
@@ -130,7 +127,7 @@
       </div>
 
       <!-- SCREEN 3: REST TIMER -->
-      <div id="screen-rest" class="hidden bg-slate-900 text-white rounded-2xl shadow-xl p-6 text-center space-y-6 pulse-animation">
+      <div id="screen-rest" class="hidden bg-slate-900 border border-slate-800 text-white rounded-2xl shadow-2xl p-6 text-center space-y-6 pulse-animation">
         
         <div class="flex items-center justify-between text-xs font-semibold text-slate-400">
           <span id="rest-label" class="uppercase tracking-wider text-blue-400">REST BETWEEN EXERCISES</span>
@@ -168,29 +165,29 @@
       </div>
 
       <!-- SCREEN 4: WORKOUT COMPLETE -->
-      <div id="screen-complete" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 text-center space-y-6">
-        <div class="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto text-emerald-600">
+      <div id="screen-complete" class="hidden bg-slate-900 rounded-2xl shadow-xl border border-slate-800 p-6 text-center space-y-6">
+        <div class="w-20 h-20 bg-emerald-500/10 border border-emerald-500/20 rounded-full flex items-center justify-center mx-auto text-emerald-400">
           <i data-lucide="trophy" class="w-10 h-10"></i>
         </div>
         <div>
-          <h2 class="text-2xl font-extrabold text-slate-900">Workout Complete!</h2>
-          <p class="text-slate-500 text-sm mt-1">Great job protecting your back and staying consistent.</p>
+          <h2 class="text-2xl font-extrabold text-white">Workout Complete!</h2>
+          <p class="text-slate-400 text-sm mt-1">Great job protecting your back and staying consistent.</p>
         </div>
 
         <!-- Stats Card -->
-        <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 flex justify-around text-center">
+        <div class="bg-slate-950/60 rounded-xl p-4 border border-slate-800 flex justify-around text-center">
           <div>
             <div class="text-xs text-slate-400 font-semibold uppercase">Total Time</div>
-            <div id="summary-time" class="text-lg font-extrabold text-slate-800">18 mins</div>
+            <div id="summary-time" class="text-lg font-extrabold text-white">18 mins</div>
           </div>
-          <div class="border-r border-slate-200"></div>
+          <div class="border-r border-slate-800"></div>
           <div>
             <div class="text-xs text-slate-400 font-semibold uppercase">Completed</div>
-            <div class="text-lg font-extrabold text-slate-800">100%</div>
+            <div class="text-lg font-extrabold text-emerald-400">100%</div>
           </div>
         </div>
 
-        <button onclick="finishWorkout()" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/25 active:scale-[0.98] transition">
+        <button onclick="finishWorkout()" class="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-600/25 active:scale-[0.98] transition">
           Save &amp; Return Home
         </button>
       </div>
@@ -199,13 +196,13 @@
 
     <!-- LOG / HISTORY TAB -->
     <div id="log-tab" class="hidden space-y-4">
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 space-y-4">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+      <div class="bg-slate-900 rounded-2xl shadow-xl border border-slate-800 p-6 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
           <div class="flex items-center space-x-2">
-            <i data-lucide="calendar" class="w-5 h-5 text-blue-600"></i>
-            <h2 class="text-lg font-bold text-slate-900">Workout History</h2>
+            <i data-lucide="calendar" class="w-5 h-5 text-blue-500"></i>
+            <h2 class="text-lg font-bold text-white">Workout History</h2>
           </div>
-          <button onclick="clearHistory()" class="text-xs text-rose-500 hover:text-rose-700 font-semibold">Clear</button>
+          <button onclick="clearHistory()" class="text-xs text-rose-400 hover:text-rose-300 font-semibold">Clear</button>
         </div>
 
         <!-- Log List Container -->
@@ -218,15 +215,12 @@
   </main>
 
   <!-- Footer -->
-  <footer class="py-3 text-center text-xs text-slate-400 border-t border-slate-200/60 bg-white">
+  <footer class="py-3 text-center text-xs text-slate-500 border-t border-slate-800/80 bg-slate-950">
     <span>Romain Workout App • Back Safety &amp; Routine Tracker</span>
   </footer>
 
   <!-- Application Logic -->
   <script>
-    // -------------------------------------------------------------
-    // WORKOUT DATA DEFINITION
-    // -------------------------------------------------------------
     const workoutSteps = [
       // SUPERSET A - ROUND 1
       { type: 'exercise', block: 'SUPERSET A', name: 'Pike Push-ups', target: '8 Reps', setNum: 'Set 1 of 3', safety: 'Focus on vertical hip height. Regress to elevated feet if wrist or shoulder breaks form.' },
@@ -280,22 +274,17 @@
       { type: 'exercise', block: 'CORE FINISHER', name: 'Bird-Dogs', target: '8-10 Reps per side', setNum: 'Set 3 of 3', safety: 'Finish with steady hips and full extension.' }
     ];
 
-    // -------------------------------------------------------------
-    // APP STATE MANAGEMENT
-    // -------------------------------------------------------------
     let currentStepIndex = 0;
     let timerInterval = null;
     let timeRemaining = 0;
     let isPaused = false;
     let workoutStartTime = null;
 
-    // Initialize Icons
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       renderHistory();
     });
 
-    // Navigation Tab Switcher
     function switchTab(tab) {
       const workoutTab = document.getElementById('workout-tab');
       const logTab = document.getElementById('log-tab');
@@ -305,18 +294,17 @@
       if (tab === 'workout') {
         workoutTab.classList.remove('hidden');
         logTab.classList.add('hidden');
-        workoutBtn.className = 'px-3 py-1.5 rounded-md bg-white text-blue-700 shadow-sm transition';
-        logBtn.className = 'px-3 py-1.5 rounded-md text-blue-100 hover:text-white transition';
+        workoutBtn.className = 'px-3 py-1.5 rounded-md bg-blue-600 text-white shadow-sm transition';
+        logBtn.className = 'px-3 py-1.5 rounded-md text-slate-400 hover:text-white transition';
       } else {
         workoutTab.classList.add('hidden');
         logTab.classList.remove('hidden');
-        logBtn.className = 'px-3 py-1.5 rounded-md bg-white text-blue-700 shadow-sm transition';
-        workoutBtn.className = 'px-3 py-1.5 rounded-md text-blue-100 hover:text-white transition';
+        logBtn.className = 'px-3 py-1.5 rounded-md bg-blue-600 text-white shadow-sm transition';
+        workoutBtn.className = 'px-3 py-1.5 rounded-md text-slate-400 hover:text-white transition';
         renderHistory();
       }
     }
 
-    // Start Workout
     function startWorkout() {
       currentStepIndex = 0;
       workoutStartTime = new Date();
@@ -324,7 +312,6 @@
       renderStep();
     }
 
-    // Main Renderer
     function renderStep() {
       const step = workoutSteps[currentStepIndex];
 
@@ -343,12 +330,10 @@
         document.getElementById('exercise-target').innerText = step.target;
         document.getElementById('safety-text').innerText = step.safety;
 
-        // Calculate progress percentage
         const totalExerciseSteps = workoutSteps.filter(s => s.type === 'exercise').length;
         const completedExerciseSteps = workoutSteps.slice(0, currentStepIndex).filter(s => s.type === 'exercise').length + 1;
         document.getElementById('exercise-progress').innerText = `Step ${completedExerciseSteps} of ${totalExerciseSteps}`;
 
-        // Toggle back button visibility
         const backBtn = document.getElementById('exercise-back-btn');
         if (currentStepIndex === 0) {
           backBtn.classList.add('hidden');
@@ -364,7 +349,6 @@
       }
     }
 
-    // Step Advancement
     function completeExerciseStep() {
       currentStepIndex++;
       renderStep();
@@ -374,7 +358,6 @@
       if (currentStepIndex > 0) {
         clearInterval(timerInterval);
         currentStepIndex--;
-        // If stepping back lands on a rest timer, jump once more back to the preceding exercise
         if (workoutSteps[currentStepIndex].type === 'rest') {
           currentStepIndex--;
         }
@@ -382,7 +365,6 @@
       }
     }
 
-    // Timer Implementation
     function startTimer(seconds) {
       clearInterval(timerInterval);
       timeRemaining = seconds;
@@ -440,25 +422,21 @@
       renderStep();
     }
 
-    // Audio Feedback for Timer Completion
     function playBeepSound() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(880, ctx.currentTime); // High pitch A5
+        osc.frequency.setValueAtTime(880, ctx.currentTime);
         gain.gain.setValueAtTime(0.1, ctx.currentTime);
         osc.connect(gain);
         gain.connect(ctx.destination);
         osc.start();
         osc.stop(ctx.currentTime + 0.5);
-      } catch (e) {
-        // Fallback for browsers with restricted audio autoplay policies
-      }
+      } catch (e) {}
     }
 
-    // Complete & Save Workout Log
     function completeWorkout() {
       clearInterval(timerInterval);
       showScreen('screen-complete');
@@ -474,7 +452,6 @@
       showScreen('screen-idle');
     }
 
-    // Local Storage History Management
     function saveWorkoutToHistory(durationMins) {
       const history = JSON.parse(localStorage.getItem('romain_workout_history') || '[]');
       const newEntry = {
@@ -493,20 +470,20 @@
 
       if (history.length === 0) {
         historyList.innerHTML = `
-          <div class="text-center py-8 text-slate-400 text-sm">
+          <div class="text-center py-8 text-slate-500 text-sm">
             <i data-lucide="dumbbell" class="w-8 h-8 mx-auto mb-2 opacity-40"></i>
             <p>No completed workouts logged yet.</p>
           </div>
         `;
       } else {
         historyList.innerHTML = history.map(item => `
-          <div class="p-3 bg-slate-50 border border-slate-100 rounded-xl flex justify-between items-center text-sm">
+          <div class="p-3 bg-slate-950/60 border border-slate-800 rounded-xl flex justify-between items-center text-sm">
             <div>
-              <div class="font-bold text-slate-800">${item.date}</div>
-              <div class="text-xs text-slate-400">${item.time}</div>
+              <div class="font-bold text-slate-200">${item.date}</div>
+              <div class="text-xs text-slate-500">${item.time}</div>
             </div>
             <div class="text-right">
-              <span class="inline-block px-2.5 py-1 bg-blue-50 text-blue-700 font-bold rounded-lg text-xs">
+              <span class="inline-block px-2.5 py-1 bg-blue-500/10 border border-blue-500/20 text-blue-400 font-bold rounded-lg text-xs">
                 ${item.duration} mins
               </span>
             </div>
@@ -523,7 +500,6 @@
       }
     }
 
-    // Screen Helper
     function showScreen(screenId) {
       ['screen-idle', 'screen-exercise', 'screen-rest', 'screen-complete'].forEach(id => {
         document.getElementById(id).classList.add('hidden');
